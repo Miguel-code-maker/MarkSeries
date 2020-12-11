@@ -1,2 +1,2 @@
 # MarkSeries
-é uma aplicação que vc adiciona uma serie e acompanha ela pela netflix.
+é uma aplicação que vc adiciona uma serie e acompanha ela pela pela fonte escolida.
