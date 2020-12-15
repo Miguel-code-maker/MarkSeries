@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TemporadasController extends Controller
 {
-    public function index(Int $serieId)
+    public function index(Int $serieId, Request $request)
     {
         $user = User::query()->where('id', Auth::id())->first();
 
@@ -23,10 +23,9 @@ class TemporadasController extends Controller
             $link[] = $temporada->hasLinkEps();
         }
 
-        $linkReverse = array_reverse($link);
-        $ultmoLinkReverse = array_reverse($link[0]);
+        $mensagem = $request->session()->get('mensagem');
 
-        return view('series.temporadas.index', compact('temporadas', 'serie', 'link'));
+        return view('series.temporadas.index', compact('temporadas', 'serie', 'link', 'mensagem'));
     }
 
     public function addTemp(Request $request, TableWithTemp $tablewithTemp)
@@ -36,13 +35,17 @@ class TemporadasController extends Controller
         $temp = $request->temp;
         $link = $request->link;
         $idSerie = $request->idSerie;
+        $uniEp = $request->uniEp;
 
         $serie = Serie::find($idSerie);
         if (mb_strpos($link, $temp."*") !== false) {
             $tablewithTemp->addEpsOnlyTemp($serie ,$epsPorTemp, $link, $temp, $primeiroEp, true);
         } else {
-            $tablewithTemp->addEpsOnlyTemp($serie, $epsPorTemp, $link, $temp, $primeiroEp, false);
+            $link = str_replace($primeiroEp.'^',$uniEp.'^',$link);
+            $tablewithTemp->addEpsOnlyTemp($serie, $epsPorTemp, $link, $temp, $uniEp, false);
         }
+        $request->session()->flash('mensagem', "Temporada adicionada com sucesso.");
+
         return redirect()->back();
     }
 
@@ -51,6 +54,8 @@ class TemporadasController extends Controller
         $id = $request->idTemp;
 
         Temporada::destroy($id);
+
+        $request->session()->flash('mensagem', "Temporada removida com susesso.");
 
         return redirect()->back();
     }

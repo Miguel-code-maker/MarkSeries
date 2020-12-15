@@ -21,4 +21,14 @@ class Serie extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function epsPorTemp()
+    {
+        $number = 0;
+        foreach ($this->temporadas as $temporada) {
+            $number += $temporada->episodios()->count();
+        }
+
+        return $number;
+    }
 }

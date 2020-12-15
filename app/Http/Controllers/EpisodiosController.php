@@ -40,6 +40,8 @@ class EpisodiosController extends Controller
             'link' => $link
         ]);
         DB::commit();
+        $request->session()->flash('mensagem', "Episodio adicionado com sucesso.");
+
         return true;
     }
 
@@ -49,5 +51,7 @@ class EpisodiosController extends Controller
          $id = $request->id;
 
          Episodio::destroy($id);
+        $request->session()->flash('mensagem', "Episodio removido com sucesso.");
+
     }
 }
