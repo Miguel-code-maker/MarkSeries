@@ -11,7 +11,22 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+mix
+
+    .styles([
+        'resources/views/series/assets/css/createSeries.css',
+        'resources/views/series/assets/css/indexTemp.css'
+    ], 'public/seriespub/assets/css/style.css')
+
+    .scripts([
+        'resources/views/series/assets/js/createSeries.js'
+    ], 'public/seriespub/assets/js/createSeries.js')
+
+    .scripts([
+        'resources/views/series/assets/js/indexSeries.js'
+    ], 'public/seriespub/assets/js/indexSeries.js')
+
+    .scripts([
+        'resources/views/series/assets/js/indexTemp.js'
+    ], 'public/seriespub/assets/js/indexTemp.js')
+;

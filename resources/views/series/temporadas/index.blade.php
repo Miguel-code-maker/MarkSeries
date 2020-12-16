@@ -6,54 +6,7 @@
 @endsection
 
 
-@section('heade')
-    <style>
-        ul.list-temp {
-            margin-bottom: 5rem;
-            overflow: hidden;
-        }
-
-        .item-temp {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .item-ep {
-            font-size: 1rem;
-            transition: all 0.5s ease-in-out;
-
-        }
-
-        .list-eps {
-            transform: translateX(110%);
-            animation: showEps .5s ease-in-out forwards 0.1s;
-        }
-
-        @keyframes showEps {
-            to {
-                transform: translateX(0px);
-
-            }
-        }
-
-        .count {
-            height: 1.5rem;
-        }
-
-        .btn {
-            transform: translateY(-5px);
-        }
-
-
-        #ultimaTemp {
-            display: none;
-        }
-
-        .form {
-            padding-right: 10px;
-        }
-
-</style>
+@section('head')
 @endsection
 
 
@@ -81,7 +34,11 @@
     <?php $iT = 0; ?>
         @foreach ($temporadas as $temporada)
             <?php $iT++; ?>
-            <li class="list-group-item item-temp">
+            @if($iT == $serie->temporadas()->count())
+                <li class="list-group-item item-temp" id="ultimaTemp" data-link="{{ $link[0][1]? $linkModelo[0][1] : null}}" data-infotemp="{{ $iT+1 }}, {{ $temporada->episodios()->count() }}, {{ $serie->epsPorTemp() }}">
+            @else
+                <li class="list-group-item item-temp">
+            @endif
                 <div class="d-flex justify-content-between" onclick="showEps({{ $temporada->id }})"><p>{{ $temporada->numero }}° Temporada</p>
                     <div class="d-flex">
                         @if ($iT == $serie->temporadas()->count())
@@ -125,184 +82,22 @@
 
                 </ul>
             </li>
-                @if($iT == $serie->temporadas()->count())
-                <span id="ultimaTemp" hidden>{{ $iT+1 }}, {{ $temporada->episodios()->count() }}, {{ $serie->epsPorTemp() }}</span>
-                @endif
+
         @endforeach
     </ul>
-    <form action="/series/temporada/adicionar" method="POST" class="d-flex flex-column float-right w-25">
+    <div class="d-flex flex-column float-right w-25">
         @csrf
         <div class="form-group">
             <label for="epsPorTemp">Digite o número de episodio da nova Temporada:</label>
-            <input type="number" id="epsPorTemp" name="epsPorTemp" class="form-control">
-            <input type="hidden" id="temp" name="temp">
-            <input type="hidden" id="link" name="link">
-            <input type="hidden" id="ep" name="ep">
-            <input type="hidden" id="uniEp" name="uniEp">
-            <input type="hidden" id="idSerie" name="idSerie" value="{{ $serie->id }}">
+            <input type="number" data-serieid="{{ $serie->id }}" id="epsPorTemp" name="epsPorTemp" class="form-control">
             <br>
-            <button class="btn btn-primary">Adicionar</button>
+            <button class="btn btn-primary" onclick="addTemp()">Adicionar</button>
         </div>
-    </form>
+    </div>
 @endsection
 
 
 
 @section('javaScript')
-    <script>
-        function showEps(id) {
-            const ul = document.querySelector(`#eps-${id}`)
-
-            if (ul.hasAttribute('hidden')) {
-                ul.removeAttribute('hidden')
-            } else {
-                ul.hidden = true;
-            }
-
-        }
-
-        window.onload = () => {
-            const ultimaTemp = document.querySelector('#ultimaTemp')? document.querySelector('#ultimaTemp'): "1,1,1";
-            const input = document.querySelector('#temp')
-            const inputUniEp = document.querySelector('#uniEp')
-            const inputLink = document.querySelector('#link');
-            const inputEp = document.querySelector('#ep');
-            const tempEEp = ultimaTemp.textContent !== undefined? ultimaTemp.textContent.split(',') : ultimaTemp.split(',');
-            console.log(tempEEp)
-            @if (!empty($link[0][1]))
-            let link = "{{ $link[0][1] }}";
-            console.log(link)
-            link = link.replace('1', '1*');
-            console.log(link)
-            link = link.replace('2', "2^")
-            console.log(link)
-            link = link.replace('1*', tempEEp[0]+"*")
-            console.log(link)
-            link = link.replace('2^', tempEEp[1]+"^")
-            console.log(link)
-            link = link.replace(' ', '');
-            console.log(link)
-            @elseif(empty($link))
-            let link = null;
-            @endif
-            const temp = parseInt(tempEEp[0]);
-            const ep = parseInt(tempEEp[1])
-            const uniEp = parseInt(tempEEp[2])
-
-            input.value = temp;
-            inputLink.value = link;
-            inputEp.value = ep;
-            inputUniEp.value = uniEp;
-        }
-
-        function watchForLink(targetLink, idCountTemp, idEp) {
-            const input = document.querySelector(`.check-${idCountTemp}-${idEp}`);
-            if (!input.hasAttribute('checked') || !input.hasAttribute(`data-check-${idCountTemp}`)) whatchEp(input, idCountTemp, idEp);
-            input.setAttribute('checked', "");
-            input.checked = true;
-        }
-
-        function whatchEp(target, idCountTemp, idEp) {
-            let i = 0;
-            const count = document.querySelector(`.count-${idCountTemp}`);
-            const checado = target;
-            if (checado.hasAttribute(`data-check-${idCountTemp}`)) {
-                checado.removeAttribute(`data-check-${idCountTemp}`)
-                i--
-            } else {
-                i++
-                checado.setAttribute(`data-check-${idCountTemp}`, idEp.toString())
-            }
-            count.textContent = i + parseInt(count.textContent);
-
-            insertData(idCountTemp);
-        }
-
-        function insertData(idTemp) {
-            const formData = new FormData();
-
-
-            const check = document.querySelectorAll(`[data-check-${idTemp}]`);
-            let arrayAssistido = []
-            console.log(check)
-            check.forEach(cheka => arrayAssistido.push(cheka.dataset[`check-${idTemp}`]));
-            console.log(arrayAssistido)
-            formData.append('assistidoId', arrayAssistido);
-
-            const url = `/series/${idTemp}/episodio/assistir`;
-
-            servicePost(url, formData);
-
-        }
-
-        let iCenter = 1;
-        function addEps(idTemp, ultimoEp, link, epTotal) {
-            const novoEp = ultimoEp+iCenter;
-            const ultimoEpTotal = epTotal+iCenter
-            iCenter++;
-            let novoLink;
-            console.log(link)
-            if (link == null) {
-                novoLink = null;
-            } else {
-                novoLink = link.replace(`${ultimoEp}`, `${novoEp}`);
-                novoLink = novoLink.replace(`${epTotal}`, `${parseInt(ultimoEpTotal)}`);
-            }
-
-            let request = addDataBase(idTemp, novoLink, novoEp);
-
-            setInterval(() => {
-                if (request != null || request != undefined) {
-                    document.location.reload(true);
-                    request = null;
-                }
-            }, 100)
-        }
-
-
-        function addDataBase(idTemp, link, ep) {
-            const url = "{{ route('series.temporada.episodio.adicionarDo') }}";
-            const formData = new FormData();
-
-            formData.append('idTemp', idTemp);
-            if (link) formData.append('link', link);
-            formData.append('ep', ep);
-
-            return servicePost(url, formData)
-        }
-
-        function removerEp(idEp) {
-            const formData = new FormData();
-            const url = "{{ route('series.temporada.episodio.removerDo') }}";
-            formData.append('id', idEp);
-            let request = servicePost(url, formData);
-
-            setInterval(() => {
-                if (request != null || request != undefined) {
-                    document.location.reload(true);
-                    request = null;
-                }
-            }, 100)
-        }
-
-        function removerTemp(idTemp) {
-            console.log('oi')
-            const formData = new FormData();
-            const url = "{{ route('series.temporada.removerDo') }}";
-            formData.append('idTemp', idTemp);
-            servicePost(url, formData);
-
-        }
-
-        function servicePost(url, formData) {
-            const token = document.querySelector('[name=_token]').value;
-            formData.append('_token', token);
-
-            return fetch(url, {
-                body: formData,
-                method: 'POST'
-            })
-        }
-
-    </script>
+    <script src="{{ asset('seriespub/assets/js/indexTemp.js') }}"></script>
 @endsection

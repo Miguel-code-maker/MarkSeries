@@ -43,4 +43,15 @@ class Temporada extends Model
         }
         return $array;
     }
+
+    public function linkModel()
+    {
+        $array = [];
+        foreach ($this->episodios as $episodio) {
+            if (!empty($episodio->link)) {
+                $array[] = $episodio->link;
+            }
+        }
+        return $array;
+    }
 }

@@ -1,0 +1,39 @@
+ul.list-temp {
+    margin-bottom: 5rem;
+    overflow: hidden;
+}
+
+.item-temp {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.item-ep {
+    font-size: 1rem;
+    transition: all 0.5s ease-in-out;
+
+}
+
+.list-eps {
+    transform: translateX(110%);
+    animation: showEps .5s ease-in-out forwards 0.1s;
+}
+
+@keyframes showEps {
+    to {
+        transform: translateX(0px);
+
+    }
+}
+
+.count {
+    height: 1.5rem;
+}
+
+.btn {
+    transform: translateY(-5px);
+}
+
+.form {
+    padding-right: 10px;
+}

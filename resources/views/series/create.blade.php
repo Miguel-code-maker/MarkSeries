@@ -8,20 +8,7 @@ Adicionar Nova Série
 Adicionar Série
 @endsection
 
-@section('heade')
-    <style>
-        .input-group-link {
-            padding-left: -10rem;
-            margin: 1rem -1rem;
-        }
-        .group-check {
-            margin-top: 3rem;
-        }
-
-        .col-link {
-            display: none;
-        }
-    </style>
+@section('head')
 @endsection
 
 @section('content')
@@ -68,29 +55,9 @@ Adicionar Série
         </div>
         <button class="btn btn-primary mt-2">Adicionar</button>
     </form>
-    <script>
-        const checks = document.querySelectorAll('[type="checkbox"]');
-        const checkPersonaliza = document.querySelector('#checkPersonaliza')
-        const linkInput = document.querySelector('#link')
-        const divPersonaliza = document.querySelector('.col-link');
-        checkPersonaliza.checked = false;
-        checks.forEach(check => {
-            check.addEventListener('click', e => {
-                checks.forEach(c => {
-                    c.checked = (c == e.target);
-                    if (c.checked && c == checkPersonaliza) {
-                        divPersonaliza.style = "display: block;";
-                    } else {
-                        divPersonaliza.style = "display: none;"
-                        linkInput.value = '';
-                    }
-
-                })
-            })
-        })
-    </script>
 @endsection
 
 
 @section('javaScript')
+    <script src="{{ asset('seriespub/assets/js/createSeries.js') }}"></script>
 @endsection

@@ -18,14 +18,16 @@ class TemporadasController extends Controller
         $serie = $user->series()->find($serieId);
         $temporadas = $serie->temporadas;
         $link = [];
+        $linkModelo = [];
 
         foreach ($temporadas as $temporada) {
             $link[] = $temporada->hasLinkEps();
+            $linkModelo[] = $temporada->linkModel();
         }
 
         $mensagem = $request->session()->get('mensagem');
 
-        return view('series.temporadas.index', compact('temporadas', 'serie', 'link', 'mensagem'));
+        return view('series.temporadas.index', compact('temporadas', 'serie', 'link', 'mensagem', 'linkModelo'));
     }
 
     public function addTemp(Request $request, TableWithTemp $tablewithTemp)

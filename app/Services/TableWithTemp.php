@@ -3,8 +3,8 @@
 namespace App\Services;
 
 
-use App\Episodio;
-use App\Temporada;
+use App\Models\Episodio;
+use App\Models\Temporada;
 use Illuminate\Support\Facades\DB;
 
 class TableWithTemp
